@@ -38,6 +38,7 @@ CORE_IMAGE_BASE_INSTALL_GPLV3 = "\
 "
 
 CORE_IMAGE_BASE_INSTALL += " \
+    curl \
     kernel-modules \
     networkmanager-nmcli \
     git \
