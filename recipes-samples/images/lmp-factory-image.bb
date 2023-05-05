@@ -38,9 +38,12 @@ CORE_IMAGE_BASE_INSTALL_GPLV3 = "\
 "
 
 CORE_IMAGE_BASE_INSTALL += " \
+    andy-sota-client \
+    byobu \
     curl \
     kernel-modules \
     networkmanager-nmcli \
+    nfs-utils \
     git \
     vim \
     packagegroup-core-full-cmdline-extended \

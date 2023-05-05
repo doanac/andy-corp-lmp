@@ -1,5 +1,7 @@
 # LMP factory specific customizations (either replace or extend options as defined by meta-lmp)
 
+KERNEL_FEATURES:append = " features/nfsd/nfsd-enable.scc"
+
 # kernel modules signing key
 MODSIGN_KEY_DIR = "${TOPDIR}/conf/factory-keys"
 MODSIGN_PRIVKEY = "${MODSIGN_KEY_DIR}/privkey_modsign.pem"
