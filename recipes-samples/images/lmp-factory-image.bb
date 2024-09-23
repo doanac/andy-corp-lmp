@@ -40,6 +40,7 @@ CORE_IMAGE_BASE_INSTALL_GPLV3 = "\
 CORE_IMAGE_BASE_INSTALL += " \
     andy-sota-client \
     byobu \
+    collectd \
     curl \
     kernel-modules \
     networkmanager-nmcli \
