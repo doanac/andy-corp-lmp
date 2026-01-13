@@ -42,6 +42,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     byobu \
     collectd \
     curl \
+    fuse3 \
     kernel-modules \
     networkmanager-nmcli \
     nfs-utils \
