@@ -1,0 +1,19 @@
+# Workflow for pushes to main branch
+name: ci-main
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  call-shared:
+    uses: ./.github/workflows/shared.yml
+    with:
+      imgtag: ${{ github.ref_name }}
+      push: true

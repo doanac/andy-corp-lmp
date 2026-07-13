@@ -1,0 +1,16 @@
+name: ci-pr
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  call-shared:
+    uses: ./.github/workflows/shared.yml
+    with:
+      imgtag: "pr-${{ github.event.number }}"
+      push: false

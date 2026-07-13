@@ -1,0 +1,78 @@
+# Shared workflow for CI logic
+name: ci-shared
+
+on:
+  workflow_call:
+    inputs:
+      imgtag:
+        required: true
+        type: string
+      push:
+        required: true
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-yocto:
+    runs-on: [self-hosted, Linux, X64]
+
+    env:
+     ARCHIVE: /var/code/andy-corp/andy-corp-lmp/.kas-work/archive
+     KAS_CACHE: /var/code/andy-corp/andy-corp-lmp/.kas-cache
+     FACTORY_KEYS_DIR: /var/code/andy-corp/andy-corp-lmp/factory-keys
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Kas Checkout
+        run: |
+          set -ex
+          ./kas-container checkout kas/lmp-factory-image.yml
+
+      - name: Generate build number
+        id: buildnumber
+        if: github.event_name == 'push'
+        uses: onyxmueller/build-tag-number@v1
+        with:
+          token: ${{secrets.github_token}}
+
+      - name: Kas Build
+        run: |
+          set -ex
+
+          export H_BUILD="${{ steps.buildnumber.outputs.build_number || '0' }}"
+          if [ "${H_BUILD}" -eq 0 ] ; then
+              H_BUILD="${{ github.run_id }}"
+          fi
+
+          export DL_DIR=${KAS_CACHE}/downloads
+          export SSTATE_DIR=${KAS_CACHE}/sstate-cache
+          export KAS_WORK_DIR=`pwd`/.kas-work
+          mkdir -p ${KAS_WORK_DIR}/build/conf ${DL_DIR} ${SSTATE_DIR} || echo "WEIRD????"
+
+          KAS_DEBUG=1 ./kas-container --runtime-args "-v $FACTORY_KEYS_DIR:/work/build/conf/factory-keys:ro" build kas/lmp-factory-image.yml
+
+      - name: Archive
+        run: |
+          set -ex
+          export H_BUILD="${{ steps.buildnumber.outputs.build_number || '0' }}"
+          if [ "${H_BUILD}" -eq 0 ] ; then
+              archive="${ARCHIVE}/builds/prs/${{ github.run_id }}"
+          else
+              archive="${ARCHIVE}/builds/${{ github.ref_name }}/${H_BUILD}"
+          fi
+
+          mkdir -p $archive
+
+          cd .kas-work/build/tmp/deploy/images/intel-corei7-64
+
+          tar -czf ${archive}/ostree_repo.tgz ostree_repo
+
+          cp lmp-factory-image-intel-corei7-64.spdx.tar.zst ${archive}/
+          cp lmp-factory-image-intel-corei7-64.wic.gz ${archive}/
+          cp os-release ${archive}/
+          cp ovmf* ${archive}/
