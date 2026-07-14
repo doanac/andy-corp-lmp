@@ -54,7 +54,7 @@ jobs:
           export KAS_WORK_DIR=`pwd`/.kas-work
           mkdir -p ${KAS_WORK_DIR}/build/conf ${DL_DIR} ${SSTATE_DIR} || echo "WEIRD????"
 
-          ./kas-container --runtime-args "-v $FACTORY_KEYS_DIR:/work/build/conf/factory-keys:ro" build kas/lmp-factory-image.yml
+          ./kas-container --runtime-args "-v $FACTORY_KEYS_DIR:/work/build/conf/factory-keys:ro -e H_BUILD=$H_BUILD" build kas/lmp-factory-image.yml
 
       - name: Archive
         run: |
